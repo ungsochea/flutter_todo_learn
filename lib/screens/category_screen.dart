@@ -143,6 +143,31 @@ class _CategoryScreenState extends State<CategoryScreen> {
         );
       });
     }
+    _deleteCategoryDialog(BuildContext context,categoryId){
+      return showDialog(context:context,barrierDismissible: true,builder: (param){
+        return AlertDialog(
+          actions: <Widget>[
+            FlatButton(
+              onPressed: (){
+                Navigator.pop(context);
+
+              },
+              color: Colors.green,
+              child: Text("Cancel",style: TextStyle(color: Colors.white)),
+            ),
+            FlatButton(
+              onPressed: () async{
+                await _categoryService.deleteCategory(categoryId);
+              },
+              color: Colors.red,
+              child: Text("Delete",style: TextStyle(color: Colors.white),),
+            ),
+
+          ],
+          title: Text("Are you sure , you want to delete ?"),
+        );
+      });
+    }
 
     _editCategory(BuildContext context,categoryId) async{
         category = await _categoryService.getCategoryById(categoryId);
@@ -152,6 +177,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
         });
         _editCategoryDialog(context);
     }
+
     _showSnackBar(message){
       var _snackBar = SnackBar(
         content: message,
@@ -186,7 +212,7 @@ class _CategoryScreenState extends State<CategoryScreen> {
                   children: <Widget>[
                     Text(_categoryList[index].name),
                     IconButton(icon: Icon(Icons.delete),onPressed: (){
-
+                      _deleteCategoryDialog(context,_categoryList[index].id);
                     },)
                   ],
                 ),
@@ -194,32 +220,6 @@ class _CategoryScreenState extends State<CategoryScreen> {
             );
           }
       ),
-
-//      ListView(
-//        scrollDirection: Axis.vertical,
-//        children: List.generate(_categoryList.length, (index) {
-//          return Column(
-//            children: <Widget>[
-//              Card(
-//                child: ListTile(
-//                  leading: IconButton(icon: Icon(Icons.edit),onPressed: (){
-//
-//                  },),
-//                  title: Row(
-//                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-//                  children: <Widget>[
-//                      Text(_categoryList[index].name),
-//                      IconButton(icon: Icon(Icons.delete),onPressed: (){
-//
-//                      },)
-//                  ],
-//                  ),
-//                ),
-//              )
-//            ]
-//          );
-//        }),
-//      ),
       floatingActionButton: FloatingActionButton(onPressed: (){
         _showFormInDialog(context);
       },child: Icon(Icons.add),),
