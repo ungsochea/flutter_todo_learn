@@ -16,4 +16,8 @@ class CategoryService{
   getCategories() async{
     return await _repository.getAll('categories');
   }
+
+  getCategoryById(categoryId) async{
+   return await _repository.getById('categories',categoryId);
+  }
 }
