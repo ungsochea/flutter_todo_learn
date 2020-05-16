@@ -21,13 +21,17 @@ class _CategoryScreenState extends State<CategoryScreen> {
     var _editCategoryName  = TextEditingController();
     var _editCategoryDescription  = TextEditingController();
 
+    var category;
+
     @override
     void initState(){
       super.initState();
       getAllCategories();
     }
+    final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
 
     getAllCategories() async {
+      _categoryList = List<Category>();
       var categories = await _categoryService.getCategories();
       categories.forEach((category) {
        setState(() {
@@ -101,12 +105,18 @@ class _CategoryScreenState extends State<CategoryScreen> {
             ),
             FlatButton(
               onPressed: () async{
-                _category.name = _categoryName.text;
-                _category.description = _categoryDescription.text;
-                var result = await _categoryService.saveCategory(_category);
+                _category.id = category[0]['id'];
+                _category.name = _editCategoryName.text;
+                _category.description = _editCategoryDescription.text;
+                var result = await _categoryService.updateCategory(_category);
+                if(result > 0){
+                  Navigator.pop(context);
+                  getAllCategories();
+                  _showSnackBar(Text('Success updated'));
+                }
                 print(result);
               },
-              child: Text("Save"),
+              child: Text("Update"),
             )
           ],
           title: Text("Category edit form"),
@@ -133,17 +143,25 @@ class _CategoryScreenState extends State<CategoryScreen> {
         );
       });
     }
-  _editCategory(BuildContext context,categoryId) async{
-      var category = await _categoryService.getCategoryById(categoryId);
-      setState(() {
-        _editCategoryName.text = category[0]['name'] ?? 'No name';
-        _editCategoryDescription.text = category[0]['description'] ?? 'No description';
-      });
-      _editCategoryDialog(context);
-  }
+
+    _editCategory(BuildContext context,categoryId) async{
+        category = await _categoryService.getCategoryById(categoryId);
+        setState(() {
+          _editCategoryName.text = category[0]['name'] ?? 'No name';
+          _editCategoryDescription.text = category[0]['description'] ?? 'No description';
+        });
+        _editCategoryDialog(context);
+    }
+    _showSnackBar(message){
+      var _snackBar = SnackBar(
+        content: message,
+      );
+      _scaffoldKey.currentState.showSnackBar(_snackBar);
+    }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _scaffoldKey,
       appBar: AppBar(
         leading: RaisedButton(
           elevation: 0.0,
