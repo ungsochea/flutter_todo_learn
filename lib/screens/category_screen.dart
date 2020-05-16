@@ -62,6 +62,8 @@ class _CategoryScreenState extends State<CategoryScreen> {
                 var result = await _categoryService.saveCategory(_category);
                 if(result > 0){
                   Navigator.pop(context);
+                  getAllCategories();
+                  _showSnackBar(Text('Success added'));
                 }
                 print(result);
               },
@@ -157,7 +159,13 @@ class _CategoryScreenState extends State<CategoryScreen> {
             ),
             FlatButton(
               onPressed: () async{
-                await _categoryService.deleteCategory(categoryId);
+                var result = await _categoryService.deleteCategory(categoryId);
+                if(result > 0){
+                  Navigator.pop(context);
+                  getAllCategories();
+                  _showSnackBar(Text('Success deleted'));
+                }
+                print(result);
               },
               color: Colors.red,
               child: Text("Delete",style: TextStyle(color: Colors.white),),
